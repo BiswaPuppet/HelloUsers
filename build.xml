@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<project name="Hello Travelers" default="build">
+	
+	<target name="init">
+		<property name="workingDir" value="${basedir}"/>
+		<property name="libDir" value="${workingDir}/lib"/>
+		<property name="WebContentLib" value="${workingDir}/WebContent/WEB-INF/lib"/>
+
+		<property name="sourceDir" value="${workingDir}/src" />
+		<property name="outputDir" value="${workingDir}/build/classes" />
+		<property name="warDestDir" value="${workingDir}/wars"/>
+        <property name="TOMCAT_HOME" value="/opt/tomcat"/>
+
+		<property name="deployDir" value="${TOMCAT_HOME}/webapps" />
+		<property name="warName" value="helloTravelers.war"/>
+
+
+
+	</target>
+	
+	<target name="clean" depends="init">
+		<deltree dir="${outputDir}" />
+		<deltree dir="${warDestDir}" />
+   </target>
+	
+	<target name="prepare" depends="clean">
+		<mkdir dir="${outputDir}" />
+		<mkdir dir="${warDestDir}" />
+	</target>
+	
+	<path id="compile.classpath">
+        <pathelement path="lib/servlet-api.jar" />
+		<fileset dir="lib">
+	        <include name="*.jar"/>
+	    </fileset>
+	</path>
+	
+	<target name="compile" depends="prepare">
+		<javac srcdir="${sourceDir}" destdir="${outputDir}" includeantruntime="false">
+			<classpath refid="compile.classpath"/>
+		</javac>	
+	</target>
+	
+	<target name="build" depends="compile,init">
+		<war destfile="${warDestDir}/${warName}" >
+	        <fileset dir="WebContent"/>
+	        <classes dir="${outputDir}"/>
+	    </war>
+   </target>
+	
+	<target name="deploy" depends="build">
+		<echo>Deploying war to tomcat</echo>
+		<copyfile src="${warDestDir}/${warName}" dest="${deployDir}/${warName}"/>
+	</target>
+</project>
